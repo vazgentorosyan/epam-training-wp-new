@@ -1,0 +1,6 @@
+#mysql vars
+
+mysql_user: wp_user
+mysql_db: wp_db
+mysql_password: Aa123456
+

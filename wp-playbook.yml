@@ -1,0 +1,63 @@
+---
+ - name: "install wordpress" 
+   hosts: remote_servers
+   become: yes
+   vars_files:
+           -  vars.txt
+    
+   tasks:
+   - name: apt update and install apache2
+     apt:
+             update_cache: yes
+             name: apache2
+             state: present
+   - name: install mysql server
+     apt:
+             name: mysql-server
+             state: present
+
+   - name: Install php modules
+     apt:
+             name:
+                     - php-curl
+                     - php-gd 
+                     - php-mbstring
+                     - php-xml 
+                     - php-xmlrpc
+                     - php-soap
+                     - php-intl 
+                     - php-zip
+                     - python3-pymysql
+                     - php
+                     - php-mysql
+                     - libapache2-mod-php
+             state: present
+
+   - name: download and unarchive wordpress
+     unarchive:
+             src: http://wordpress.org/latest.tar.gz
+             dest: /var/www/html/
+             remote_src: yes
+    
+   - name: Setting mysql root passsword
+     mysql_user:
+            name: root
+            password: pass_epam
+            priv: '*.*:ALL,GRANT'
+            become: yes
+
+   - name: copy my.cfg to remote machine
+     copy: 
+            src: my.cnf
+            dest: /root/.my.cnf
+            owner: foo
+            mode: '0600'
+            become: yes
+
+
+   - name: Create WP mysql user
+     community.mysql.mysql_user:
+             name: '{{mysql_user}}'
+             password: '{{mysql_password}}'
+             priv: '*.*:ALL'
+             state: present
