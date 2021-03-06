@@ -75,7 +75,6 @@
 
    - name: copy WP sample config to config
      copy:
-             src: /var/www/html/wordpress/wp-config-sample.php
+             src: config-files/wp-config.php
              dest: /var/www/html/wordpress/wp-config.php
-             remote_src: yes
      become: yes
