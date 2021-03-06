@@ -33,31 +33,49 @@
                      - libapache2-mod-php
              state: present
 
-   - name: download and unarchive wordpress
-     unarchive:
-             src: http://wordpress.org/latest.tar.gz
-             dest: /var/www/html/
-             remote_src: yes
-    
-   - name: Setting mysql root passsword
-     mysql_user:
-            name: root
-            password: pass_epam
-            priv: '*.*:ALL,GRANT'
-            become: yes
+             #   - name: download and unarchive wordpress
+             #unarchive:
+             #src: http://wordpress.org/latest.tar.gz
+             #dest: /var/www/html/
+             #remote_src: yes
 
-   - name: copy my.cfg to remote machine
-     copy: 
-            src: my.cnf
-            dest: /root/.my.cnf
-            owner: foo
-            mode: '0600'
-            become: yes
+   - name: CHOWN wordpress folder
+     file:
+             path: /var/www/html/wordpress
+             owner: www-data
+             group: www-data
+     become: yes
 
+   - name: update mysql root password for all root accounts
+     become: yes
+     mysql_user: 
+            name: root 
+            password: "{{ mysql_root_pass }}"
+            login_user: root
+            login_password: "{{ mysql_root_pass }}"
+            check_implicit_admin: yes
+            priv: "*.*:ALL,GRANT"
+            login_unix_socket: /var/run/mysqld/mysqld.sock
 
    - name: Create WP mysql user
      community.mysql.mysql_user:
-             name: '{{mysql_user}}'
-             password: '{{mysql_password}}'
+             name: '{{ wp_mysql_user }}'
+             password: '{{ wp_mysql_pass }}'
              priv: '*.*:ALL'
              state: present
+
+   - name: Create WP Database
+     mysql_db:
+             name: '{{ wp_db_name }}'
+             state: present
+             login_user: root
+             login_password: "{{ mysql_root_pass }}"
+             login_unix_socket: /var/run/mysqld/mysqld.sock
+     become: yes
+
+   - name: copy WP sample config to config
+     copy:
+             src: /var/www/html/wordpress/wp-config-sample.php
+             dest: /var/www/html/wordpress/wp-config.php
+             remote_src: yes
+     become: yes
