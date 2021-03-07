@@ -46,7 +46,7 @@
              group: www-data
      become: yes
 
-   - name: update mysql root password for all root accounts
+   - name: set root mysql password
      become: yes
      mysql_user: 
             name: root 
@@ -77,4 +77,11 @@
      template:
              src: config-files/wp-config.php
              dest: /var/www/html/wordpress/wp-config.php
+     notify: reload_apache
      become: yes
+   
+   handlers:
+   - name: reload_apache
+     service:
+            name: apache2
+            state: reloaded             
