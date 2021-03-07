@@ -33,11 +33,11 @@
                      - libapache2-mod-php
              state: present
 
-             #   - name: download and unarchive wordpress
-             #unarchive:
-             #src: http://wordpress.org/latest.tar.gz
-             #dest: /var/www/html/
-             #remote_src: yes
+   - name: download and unarchive wordpress
+     unarchive:
+             src: http://wordpress.org/latest.tar.gz
+             dest: /var/www/html/
+             remote_src: yes
 
    - name: CHOWN wordpress folder
      file:
@@ -74,7 +74,7 @@
      become: yes
 
    - name: copy WP sample config to config
-     copy:
+     template:
              src: config-files/wp-config.php
              dest: /var/www/html/wordpress/wp-config.php
      become: yes
