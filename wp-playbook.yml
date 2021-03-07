@@ -33,16 +33,16 @@
                      - libapache2-mod-php
              state: present
 
-   - name: cheak wordpress folder existing
+   - name: check wordpress folder existing
      stat: path=/var/www/html/wordpress
-     register: cheack_path
+     register: check_path
 
    - name: download and unarchive wordpress
      unarchive:
              src: http://wordpress.org/latest.tar.gz
              dest: /var/www/html/
              remote_src: yes
-     when: not cheack_path.stat.exists
+     when: not check_path.stat.exists
 
    - name: CHOWN wordpress folder
      file:
