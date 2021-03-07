@@ -79,6 +79,12 @@
              dest: /var/www/html/wordpress/wp-config.php
      notify: reload_apache
      become: yes
+
+   - name: change apache default config file
+     copy:
+             src: config-files/000-default.conf
+             dest: /etc/apache2/sites-available/000-default.conf
+     notify: reload_apache
    
    handlers:
    - name: reload_apache
