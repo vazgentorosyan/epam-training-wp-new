@@ -10,10 +10,13 @@
              update_cache: yes
              name: apache2
              state: present
+     become: yes
+   
    - name: install mysql server
      apt:
              name: mysql-server
              state: present
+     become: yes
 
    - name: Install php modules
      apt:
@@ -31,6 +34,7 @@
                      - php-mysql
                      - libapache2-mod-php
              state: present
+     become: yes
 
    - name: check wordpress folder existing
      stat: path=/var/www/html/wordpress
@@ -41,6 +45,7 @@
              src: http://wordpress.org/latest.tar.gz
              dest: /var/www/html/
              remote_src: yes
+     become: true
      when: not check_path.stat.exists
 
    - name: CHOWN wordpress folder
@@ -51,7 +56,6 @@
      become: yes
 
    - name: set root mysql password
-     become: yes
      mysql_user: 
             name: root 
             password: "{{ mysql_root_pass }}"
@@ -60,6 +64,7 @@
             check_implicit_admin: yes
             priv: "*.*:ALL,GRANT"
             login_unix_socket: /var/run/mysqld/mysqld.sock
+     become: yes
 
    - name: Create WP mysql user
      community.mysql.mysql_user:
@@ -91,9 +96,11 @@
              src: config-files/000-default.conf
              dest: /etc/apache2/sites-available/000-default.conf
      notify: reload_apache
+     become: yes
    
    handlers:
    - name: reload_apache
      service:
             name: apache2
-            state: reloaded             
+            state: reloaded
+     become: yes
